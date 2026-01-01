@@ -1,1 +1,3 @@
-<video controls src="WhatsApp Video 2026-01-01 at 09.54.22.mp4" title="Title"></video>
+<p align="center">
+  <img src="assets/2026.gif" width="450">
+</p>
