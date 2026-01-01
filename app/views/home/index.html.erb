@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Selamat Tahun Baru</title>
+  <style>
+    html,body {
+      height: 100%;
+      margin: 0;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+    }
+
+    .year-wrap {
+      position: relative;
+      height: 28vh;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+      z-index: 5;
+    }
+
+    .year {
+      font-weight: 900;
+      font-size: calc(8vw + 2rem);
+      letter-spacing: .02em;
+      display: block;
+      position: absolute;
+      transform-origin: center;
+      will-change: transform, opacity, filter;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .year.old {
+      transform: translateY(0) rotateX(0deg) scale(1);
+      opacity: 1;
+      filter: blur(0px);
+      mix-blend-mode: screen;
+    }
+
+    .year.new {
+      transform: translateY(30px) rotateX(-20deg) scale(0.94);
+      opacity: 0;
+      filter: blur(6px);
+      mix-blend-mode: screen;
+    }
+
+    .transition-start .year.old {
+      animation: oldComplex 1.2s cubic-bezier(.16,.9,.3,1) forwards;
+    }
+
+    .transition-start .year.new {
+      animation: newComplex 1.35s 0.06s cubic-bezier(.2,.95,.25,1) forwards;
+    }
+
+    @keyframes oldComplex {
+      0% { transform: translateY(0) rotateX(0deg) scale(1); opacity:1; filter: blur(0px); text-shadow: none; }
+      18% { transform: translateY(-6px) rotateX(4deg) scale(1.02); opacity:1; filter: blur(0.5px); text-shadow: 0 6px 24px rgba(255,255,255,0.03); }
+      42% { transform: translateY(-42px) rotateX(12deg) scale(0.98); opacity:0.9; filter: blur(2px); }
+      75% { transform: translateY(-200px) rotateX(28deg) scale(0.86); opacity:0.35; filter: blur(6px); }
+      100% { transform: translateY(-320px) rotateX(40deg) scale(0.76); opacity:0; filter: blur(10px); }
+    }
+
+    @keyframes newComplex {
+      0% { transform: translateY(40px) rotateX(-28deg) scale(0.88); opacity:0; filter: blur(8px); }
+      32% { transform: translateY(6px) rotateX(6deg) scale(1.06); opacity:1; filter: blur(0.5px); }
+      68% { transform: translateY(-8px) rotateX(2deg) scale(0.98); opacity:1; filter: blur(0px); }
+      100% { transform: translateY(0) rotateX(0deg) scale(1); opacity:1; filter: blur(0px); }
+    }
+
+    .subtitle {
+      margin-top: 16px;
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
+      z-index: 6;
+      letter-spacing: .08em;
+    }
+
+    .glow {
+      position: absolute;
+      width: 80vmax;
+      height: 80vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 12%, transparent 28%);
+      filter: blur(52px) saturate(120%);
+      z-index: 2;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    canvas#fx {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      pointer-events: none;
+      background-image:
+        radial-gradient(ellipse at center, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.25) 70%, rgba(0,0,0,0.6) 100%);
+      mix-blend-mode: multiply;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8"><rect width="8" height="8" fill="black" fill-opacity="0.02"/></svg>');
+      opacity: 0.6;
+      mix-blend-mode: overlay;
+      animation: grainShift 6s linear infinite;
+    }
+
+    @keyframes grainShift {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+      100% { transform: translateY(0); }
+    }
+
+    .text-layer { z-index: 6; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+
+    .sr-only {
+      position: absolute;
+      left: -9999px;
+      width: 1px; height: 1px;
+      overflow: hidden;
+    }
+
+    @media (max-width:520px) {
+      .year { font-size: calc(14vw + 1rem); }
+      .year-wrap { height: 24vh; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <canvas id="fx"></canvas>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="text-layer">
+      <div class="year-wrap" aria-hidden="false" role="img" aria-label="Tahun berganti dari 2025 ke 2026">
+        <span class="year old" id="year-old">2025</span>
+        <span class="year new" id="year-new">2026</span>
+      </div>
+      <div class="subtitle" id="subtitle">Happy New Year!</div>
+    </div>
+    <div class="vignette" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="sr-only" aria-hidden="false" id="live-region" role="status" aria-live="polite">2025</div>
+  </div>
+
+  <script>
+    (function(){
+      const stage = document.getElementById('stage');
+      const live = document.getElementById('live-region');
+      const WAIT_BEFORE = 1200;
+      setTimeout(() => {
+        stage.classList.add('transition-start');
+        live.textContent = '2026';
+      }, WAIT_BEFORE);
+
+      const TOTAL_ANIM_MS = WAIT_BEFORE + 1500;
+      setTimeout(() => {
+        if (window.fireworksController) {
+          // buat ledakan pembuka, lalu mulai pertunjukan TANPA HENTI
+          window.fireworksController.explodeGrand(7);
+          window.fireworksController.startShow(); // no duration = nonstop until stopShow()
+        }
+      }, TOTAL_ANIM_MS);
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const canvas = document.getElementById('fx');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      let DPR = Math.max(1, window.devicePixelRatio || 1);
+      let W = innerWidth, H = innerHeight;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+
+      function resize() {
+        W = innerWidth; H = innerHeight;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        canvas.width = Math.floor(W * DPR);
+        canvas.height = Math.floor(H * DPR);
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+      window.addEventListener('resize', resize);
+
+      function rand(min, max){ return Math.random()*(max-min)+min; }
+      function rint(a,b){ return Math.floor(rand(a,b+1)); }
+
+      const PARTICLES = [];
+      const ROCKETS = [];
+      const RINGS = [];
+      const LIGHTS = [];
+      const SMOKES = [];
+
+      const WHITE = '#FFFFFF';
+      // full-color palette (vibrant, varied)
+      const PALETTE = ['#FF3B30','#FF9500','#FFD60A','#34C759','#0A84FF','#5E5CE6','#FF2D55','#AF52DE','#FF9F0A','#00C7BE'];
+
+      class Smoke {
+        constructor(x,y,vx,vy,l,sz,alpha) {
+          this.x = x; this.y = y; this.vx = vx; this.vy = vy; this.life = l; this.max = l; this.sz = sz; this.a = alpha || 0.12;
+        }
+        update(dt) {
+          this.vx *= 0.995;
+          this.vy -= 0.02 * dt;
+          this.x += this.vx * dt;
+          this.y += this.vy * dt;
+          this.life -= dt;
+        }
+        draw() {
+          const t = Math.max(0, this.life/this.max);
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = this.a * t * 0.9;
+          const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.sz*1.6);
+          g.addColorStop(0, 'rgba(255,255,255,0.12)');
+          g.addColorStop(1, 'rgba(255,255,255,0.00)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.ellipse(this.x, this.y, this.sz*1.2, this.sz*0.7, 0, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      class Particle {
+        constructor(x,y,vx,vy,l,sz,col,drag,glow) {
+          this.x = x; this.y = y; this.vx = vx; this.vy = vy; this.life = l; this.max = l; this.sz = sz; this.col = col; this.drag = drag || 0.995; this.glow = !!glow;
+        }
+        update(dt) {
+          this.vx *= Math.pow(this.drag, dt);
+          this.vy += 0.04 * dt;
+          this.x += this.vx * dt;
+          this.y += this.vy * dt;
+          this.life -= dt;
+        }
+        draw() {
+          const t = Math.max(0, this.life/this.max);
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = Math.min(1, t*1.2);
+          if (this.glow) {
+            const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.sz*6);
+            g.addColorStop(0, this.col);
+            g.addColorStop(0.2, this.col + '33');
+            g.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.sz*6, 0, Math.PI*2);
+            ctx.fill();
+          }
+          ctx.fillStyle = this.col;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, Math.max(0.6, this.sz * (t + 0.08)), 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      class Rocket {
+        constructor(x, targetY, hue) {
+          this.x = x; this.y = H + 10;
+          this.vx = rand(-0.35,0.35); this.vy = rand(-8.0, -9.5);
+          this.targetY = targetY || rand(H*0.18, H*0.45);
+          this.exploded = false;
+          this.hue = hue || PALETTE[rint(0, PALETTE.length-1)];
+          this.tail = [];
+        }
+        update(dt) {
+          if (this.exploded) return;
+          this.vy += 0.06 * dt;
+          this.x += this.vx * dt;
+          this.y += this.vy * dt;
+          this.tail.push({x:this.x, y:this.y, life: Math.min(20, 30)});
+          if (this.tail.length > 18) this.tail.shift();
+          if (this.y <= this.targetY || this.vy > -0.6) {
+            this.explode();
+            this.exploded = true;
+          }
+        }
+        explode() {
+          const count = rint(40, 90);
+          for (let i=0;i<count;i++){
+            const ang = Math.random()*Math.PI*2;
+            const speed = rand(1.6,6.8) * (0.6 + Math.random()*0.9);
+            const vx = Math.cos(ang)*speed;
+            const vy = Math.sin(ang)*speed;
+            const life = rint(50, 120);
+            const size = rand(1.0, 3.8);
+            // gunakan warna roket jika tersedia, atau pilih random dari palet
+            const col = this.hue || PALETTE[rint(0,PALETTE.length-1)];
+            PARTICLES.push(new Particle(this.x, this.y, vx, vy, life, size, col, 0.996, i%14===0));
+          }
+          for (let s=0;s<8;s++){
+            const rsize = rand(40, 110);
+            RINGS.push({x:this.x, y:this.y, r:0, max:rsize, w: rint(1,3), life: rsize/1.6});
+          }
+          for (let m=0;m<6;m++){
+            const sx = rand(-4,4), sy = rand(-2,2);
+            LIGHTS.push({x:this.x+sx, y:this.y+sy, r: rand(8,26), life: rand(18,40) });
+          }
+          for (let k=0;k<12;k++){
+            const svx = rand(-0.6,0.6), svy = rand(-1.2,1.2);
+            SMOKES.push(new Smoke(this.x + svx*3, this.y + svy*3, svx*0.3, -rand(0.3,1.2), rand(18,40), rand(18,60), 0.08));
+          }
+          shake(10);
+        }
+        draw() {
+          for (let i=this.tail.length-1;i>=0;i--){
+            const p = this.tail[i];
+            const a = (i/this.tail.length)*0.85;
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            ctx.globalAlpha = 0.9 * a;
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255,255,255,' + (0.18 + 0.6*a) + ')';
+            ctx.arc(p.x, p.y, 1.6 + (i/this.tail.length)*2.6, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+      }
+
+      function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+
+      function drawBackground() {
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,0.18)';
+        ctx.fillRect(0,0,W,H);
+        ctx.restore();
+      }
+
+      let shakeOffset = {x:0,y:0};
+      let shakeTime = 0;
+      function shake(strength=6) {
+        shakeTime = Math.max(shakeTime, strength);
+      }
+      function applyShake() {
+        if (shakeTime > 0.01) {
+          shakeOffset.x = rand(-1,1) * shakeTime * 0.6;
+          shakeOffset.y = rand(-1,1) * shakeTime * 0.5;
+          shakeTime *= 0.86;
+        } else {
+          shakeOffset.x = 0; shakeOffset.y = 0; shakeTime = 0;
+        }
+      }
+
+      let last = performance.now();
+      function loop(now) {
+        const dtMs = now - last;
+        last = now;
+        const dt = Math.min(2, dtMs / 16.666);
+
+        applyShake();
+
+        ctx.clearRect(0,0,W,H);
+
+        ctx.save();
+        ctx.translate(shakeOffset.x, shakeOffset.y);
+
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
+        ctx.fillRect(0,0,W,H);
+
+        for (let i=SMOKES.length-1;i>=0;i--){
+          SMOKES[i].update(dt);
+          SMOKES[i].draw();
+          if (SMOKES[i].life <= 0) SMOKES.splice(i,1);
+        }
+
+        for (let i=RINGS.length-1;i>=0;i--){
+          const r = RINGS[i];
+          r.r += Math.max(1.2, r.max/60) * dt;
+          r.life -= 0.6 * dt;
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = Math.max(0, Math.min(0.9, r.life / (r.max/1.2)));
+          ctx.lineWidth = r.w;
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(255,255,255,' + (0.06 + (r.life/(r.max/1.2))*0.5) + ')';
+          ctx.arc(r.x, r.y, r.r, 0, Math.PI*2);
+          ctx.stroke();
+          ctx.restore();
+          if (r.r > r.max || r.life <= 0) RINGS.splice(i,1);
+        }
+
+        for (let i=LIGHTS.length-1;i>=0;i--){
+          const L = LIGHTS[i];
+          L.life -= 1.1 * dt;
+          ctx.save();
+          ctx.globalCompositeOperation = 'screen';
+          ctx.globalAlpha = Math.max(0, Math.min(1, L.life / 28));
+          const g = ctx.createRadialGradient(L.x, L.y, 0, L.x, L.y, L.r*2.6);
+          g.addColorStop(0, 'rgba(255,255,255,0.9)');
+          g.addColorStop(0.2, 'rgba(255,255,255,0.28)');
+          g.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(L.x, L.y, L.r*2.6, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+          if (L.life <= 0) LIGHTS.splice(i,1);
+        }
+
+        for (let i=ROCKETS.length-1;i>=0;i--){
+          ROCKETS[i].update(dt);
+          ROCKETS[i].draw();
+          if (ROCKETS[i].exploded) ROCKETS.splice(i,1);
+        }
+
+        for (let i=PARTICLES.length-1;i>=0;i--){
+          const p = PARTICLES[i];
+          p.update(dt);
+          p.draw();
+          if (p.life <= 0 || p.y > H + 60 || p.x < -80 || p.x > W + 80) {
+            PARTICLES.splice(i,1);
+          }
+        }
+
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+
+      function launchRocket(xNorm, targetY, hue) {
+        const x = Math.max(40, Math.min(W-40, (xNorm||Math.random())*W));
+        const color = hue || PALETTE[rint(0, PALETTE.length-1)];
+        ROCKETS.push(new Rocket(x, targetY, color));
+      }
+
+      const controller = {
+        explodeBurst(count=3) {
+          for (let i=0;i<count;i++){
+            launchRocket(Math.random(), rand(H*0.18, H*0.45));
+          }
+        },
+        explodeGrand(n=6) {
+          for (let i=0;i<n;i++){
+            setTimeout(()=> launchRocket(0.12 + i*(0.7/n), rand(H*0.12, H*0.36)), i*110);
+            setTimeout(()=> launchRocket(0.1 + Math.random()*0.8, rand(H*0.12, H*0.45)), i*120 + 60);
+          }
+        },
+        startShow(duration) {
+          // jika duration tidak diberikan -> jadikan nonstop sampai stopShow() dipanggil
+          if (controller._running) return;
+          controller._running = true;
+          function tick() {
+            if (!controller._running) return;
+            const choice = Math.random();
+            if (choice < 0.22) controller.explodeBurst(rint(1,3));
+            else if (choice < 0.62) launchRocket(Math.random(), rand(H*0.16, H*0.46));
+            else controller.explodeBurst(1);
+            const next = rint(220, 620);
+            controller._timer = setTimeout(tick, next);
+          }
+          tick();
+          if (duration && duration > 0) {
+            controller._stopTimer = setTimeout(()=> { controller.stopShow(); }, duration + 900);
+          }
+        },
+        stopShow() {
+          clearTimeout(controller._timer); clearTimeout(controller._stopTimer); controller._running=false;
+        }
+      };
+
+      window.fireworksController = controller;
+
+      last = performance.now();
+      requestAnimationFrame(loop);
+
+    })();
+  </script>
+</body>
+</html>
